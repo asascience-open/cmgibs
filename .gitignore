@@ -1,0 +1,18 @@
+# dotenv
+.env
+env
+
+# virtualenv
+virtualenv
+
+# pycache
+__pycache__
+.pycache
+.pyc
+
+# any local xml or .xsd
+.xml
+.xsd
+
+# .git
+.git

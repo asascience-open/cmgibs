@@ -1,0 +1,6 @@
+# used by setup.py
+include versioneer.py
+include _version.py
+
+# include the pickled colormap dict 
+include cmap_d.pkl

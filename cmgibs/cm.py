@@ -56,20 +56,23 @@ def load_cmaps():
     :returns: A dict with {name: colormap}
     """
     # check if file exists
-    loc_fp = os.path.join(os.getcwd(), 'cmap_d.pkl')
+    _dir = os.path.dirname(os.path.abspath(__file__))
+    loc_fp = os.path.join(_dir, 'cmgibs', 'cmap_d.pkl')
     if os.path.isfile(loc_fp):
         # open file, load it, return it
         with open(loc_fp, 'rb') as _cmaps:
             cmap_d = pickle.load(_cmaps)
             return cmap_d
     else:
+        print('No pickle')
         # go to the URL and create the dict
-        cmaps_url = 'https://gibs.earthdata.nasa.gov/colormaps/v1.3/'
-        cmap_d = parse(cmaps_url)
-        # open a new file, pickle the dict, and save
-        with open('cmap_d.pkl', 'wb') as f:
-            pickle.dump(cmap_d, f)
-            return cmap_d
+        # cmaps_url = 'https://gibs.earthdata.nasa.gov/colormaps/v1.3/'
+        # cmap_d = parse(cmaps_url)
+        # # open a new file, pickle the dict, and save
+        # with open('cmap_d.pkl', 'wb') as f:
+        #     pickle.dump(cmap_d, f)
+        #     return cmap_d
+        pass
 
 cmap_d = load_cmaps()
 cmap_d = {k: v for k, v in cmap_d.items() if v}

@@ -57,7 +57,7 @@ def load_cmaps():
     """
     # check if file exists
     _dir = os.path.dirname(os.path.abspath(__file__))
-    loc_fp = os.path.join(_dir, 'cmgibs', 'cmap_d.pkl')
+    loc_fp = os.path.join(_dir, 'cmap_d.pkl')
     if os.path.isfile(loc_fp):
         # open file, load it, return it
         with open(loc_fp, 'rb') as _cmaps:

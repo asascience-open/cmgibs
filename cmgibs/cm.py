@@ -38,10 +38,11 @@ def parse(url):
         # filenames
         parser = Parser()
         parser.feed(response.read().decode())
-        print('\t %4d' % len(parser.filenames))
+        print('Number colormaps to parse: {}\n'.format(len(parser.filenames)))
         # return parser.filenames[0]
         for filename in parser.filenames:
-            req = urllib.request.Request(urllib.parse.urljoin(url, filename)) #, method='HEAD')
+            # generate a request, process filename and cmap XML, add it
+            req = urllib.request.Request(urllib.parse.urljoin(url, filename))
             filename = filename.replace('.xml', '')
             gibs = GibsColormap(req, filename)
             _cmaps[filename] = gibs.generate_cmap()
@@ -71,4 +72,5 @@ def load_cmaps():
             return cmap_d
 
 cmap_d = load_cmaps()
+cmap_d = {k: v for k, v in cmap_d.items() if v}
 locals().update(cmap_d)

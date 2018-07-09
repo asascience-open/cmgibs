@@ -1,1 +1,2 @@
 _version.py export-subst
+cmgibs/_version.py export-subst

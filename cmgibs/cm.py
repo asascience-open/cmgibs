@@ -55,9 +55,10 @@ def load_cmaps():
     :returns: A dict with {name: colormap}
     """
     # check if file exists
-    if os.path.isfile('cmap_d.pkl'):
+    loc_fp = os.path.join(os.getcwd(), 'cmap_d.pkl')
+    if os.path.isfile(loc_fp):
         # open file, load it, return it
-        with open('cmap_d.pkl', 'rb') as _cmaps:
+        with open(loc_fp, 'rb') as _cmaps:
             cmap_d = pickle.load(_cmaps)
             return cmap_d
     else:

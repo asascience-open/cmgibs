@@ -145,12 +145,12 @@ class GibsColormap(object):
         # find low/high out of range values to set colors for; set the masked
         # value to the non-masked value
         for a in zip(self.values, self.rgbs):
-            percentages.append((a[0][0], a[1]))
+            # percentages.append((a[0][0], a[1]))
             if a[0][0] is np.ma.masked:
                 set_under = a[1]
-            # else:
+            else:
             #     # TODO we need to consider the FINAL value in the range, not just the lower
-            #     # percentages.append((a[0][0], a[1]))
+                percentages.append((a[0][0], a[1]))
             if a[0][1] is np.ma.masked:
                 set_over = a[1]
 

@@ -58,7 +58,12 @@ class GibsColormap(object):
 
     def generate_cmap(self):
         """
-        Generate a LinearSegmentedColormap
+        Generate a LinearSegmentedColormap from a GIBS ColorMap XML file. Each
+        ColorMapEntry tag is of the form
+
+        ```
+        <ColorMapEntry rgb="179,0,2" transparent="false" value="[96,97)" ref="96"/>
+        ```
 
         :notes
 
@@ -108,6 +113,7 @@ class GibsColormap(object):
                 _min = self.values.min()
                 # .ptp() returns range (maximum - minimum) (peak-to-peak)
                 rng = self.values.ptp()
+                # normalize to [0, 1] range
                 self.values = (self.values-_min)/rng
             else:
                 # NOTE shouldn't this be doing a different operation?
@@ -115,7 +121,7 @@ class GibsColormap(object):
                 rng = self.values.ptp()
                 self.values = (self.values-_min)/rng
 
-            print('TOTAL RANGE: [{0}-{1}] ({2})'.format(self.values.min(), self.values.max(), rng))
+            print('TOTAL RANGE: [{0}, {1}] ({2})'.format(self.values.min(), self.values.max(), rng))
 
         except Exception:
             print('-'*80)
@@ -133,11 +139,12 @@ class GibsColormap(object):
         # find low/high out of range values to set colors for; set the masked
         # value to the non-masked value
         for a in zip(self.values, self.rgbs):
+            percentages.append((a[0][0], a[1]))
             if a[0][0] is np.ma.masked:
                 set_under = a[1]
-            else:
-                # TODO we need to consider the FINAL value in the range, not just the lower
-                percentages.append((a[0][0], a[1]))
+            # else:
+            #     # TODO we need to consider the FINAL value in the range, not just the lower
+            #     # percentages.append((a[0][0], a[1]))
             if a[0][1] is np.ma.masked:
                 set_over = a[1]
 
@@ -158,6 +165,8 @@ class GibsColormap(object):
 
         # make the cmap
         self.cmap = matplotlib.colors.LinearSegmentedColormap(self.name, LinearL)
+        # if self.name == "AMSR2_Cloud_Liquid_Water_Day":
+            # import ipdb; ipdb.set_trace()
 
         # set the out-of-range colors
         if set_under:

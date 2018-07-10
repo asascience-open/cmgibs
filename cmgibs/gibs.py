@@ -132,6 +132,12 @@ class GibsColormap(object):
         # normalize RGB values into a [0, 1] range
         self.rgbs = list(map(lambda l: [x/255.0 for x in l], self.rgbs))
 
+        # because we may have artificially added an extra range value, we must
+        # also add another RGB array to match; we will duplicate the last RGB
+        # for this, as this was the color intended
+        if len(self.rgbs) != len(self.values):
+            self.rgbs.append(self.rgbs[-1])
+
         percentages = []
         set_under = None
         set_over = None
@@ -166,7 +172,7 @@ class GibsColormap(object):
         # make the cmap
         self.cmap = matplotlib.colors.LinearSegmentedColormap(self.name, LinearL)
         # if self.name == "AMSR2_Cloud_Liquid_Water_Day":
-            # import ipdb; ipdb.set_trace()
+        #     import ipdb; ipdb.set_trace()
 
         # set the out-of-range colors
         if set_under:

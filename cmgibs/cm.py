@@ -1,4 +1,3 @@
-import datetime
 import html.parser
 import pickle
 import os
@@ -30,7 +29,7 @@ class Parser(html.parser.HTMLParser):
             self.filename = None
 
 def parse(url):
-    """Parse a given URL for href tags and return the tags?
+    """Parse a given URL for href tags and return the tags
     :param str url: url string
     """
     _cmaps = dict()

@@ -25,7 +25,7 @@ class GibsColormap(object):
         valid = GibsColormap.XSD.validate(self.doc)  # NOTE what are we doing with this?
 
         self.rgbs = []
-        self.vlus = []
+        self.values = []
 
     def parse_range(self, s):
         """
@@ -44,10 +44,10 @@ class GibsColormap(object):
                 # this is the first ColorMapEntry tag of the XML
                 if s[0] <= 0:
                     s.append(0.0)
-                # if entry is positive, append itself to it; likely means this
+                # if entry is positive, append +INF to it; likely means this
                 # is the last ColorMapEntry tag of the XML
                 if s[0] > 0:
-                    s.append(s[0])
+                    s.append(float('inf'))
         except Exception as e:
             print('-'*80)
             print('For file: {:^80}\n'.format(self.name))
@@ -59,6 +59,14 @@ class GibsColormap(object):
     def generate_cmap(self):
         """
         Generate a LinearSegmentedColormap
+
+        :notes
+
+        - Ensuring val range is [0, 1] -
+        Each RGB component in LinearSegmentedColormap mustbegin at x=0 and end
+        at x=1. The values of the colormaps we are parsing do not necessarily
+        guarantee this, so we must ensure it by offsetting by the minimum value
+        and dividing by the range.
         """
         # get list of all the ColorMapEntry tags
         for e in self.doc.findall('ColorMap'):
@@ -82,22 +90,32 @@ class GibsColormap(object):
                 val_range = self.parse_range(e.get('value'))
                 # if val range not None, append it; else, skip
                 if val_range:
-                    self.vlus.append(val_range)
+                    self.values.append(val_range)
                 else:
+                    # return a None cmap -- we can't create a cmap with no vals
                     return {None}
 
-        # NOTE what is ost? ptp?
+        # NOTE if the cmap's final range was improperly formatted and does not
+        # end in +INF, we'll need to force it to in order to adhere to the
+        # intended color-value scheme
+        if self.values[-1][1] != float('inf'):
+            self.values.append([self.values[-1][1], float('inf')])
+
+        # ensuring total value range==[0, 1]
         try:
-            self.vlus = np.ma.masked_invalid(np.array(self.vlus))
-            if np.ma.is_masked(self.vlus):
-                ost = self.vlus.min()
-                # .ptp() returns (maximum - minimum) (peak-to-peak)
-                ptp = self.vlus.ptp()
-                self.vlus = (self.vlus-ost)/ptp
+            self.values = np.ma.masked_invalid(np.array(self.values))
+            if np.ma.is_masked(self.values):
+                _min = self.values.min()
+                # .ptp() returns range (maximum - minimum) (peak-to-peak)
+                rng = self.values.ptp()
+                self.values = (self.values-_min)/rng
             else:
-                ost = self.vlus.min()
-                ptp = self.vlus.ptp()
-                self.vlus = (self.vlus-ost)/ptp
+                # NOTE shouldn't this be doing a different operation?
+                _min = self.values.min()
+                rng = self.values.ptp()
+                self.values = (self.values-_min)/rng
+
+            print('TOTAL RANGE: [{0}-{1}] ({2})'.format(self.values.min(), self.values.max(), rng))
 
         except Exception:
             print('-'*80)
@@ -114,10 +132,11 @@ class GibsColormap(object):
 
         # find low/high out of range values to set colors for; set the masked
         # value to the non-masked value
-        for a in zip(self.vlus, self.rgbs):
+        for a in zip(self.values, self.rgbs):
             if a[0][0] is np.ma.masked:
                 set_under = a[1]
             else:
+                # TODO we need to consider the FINAL value in the range, not just the lower
                 percentages.append((a[0][0], a[1]))
             if a[0][1] is np.ma.masked:
                 set_over = a[1]

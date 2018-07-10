@@ -68,7 +68,7 @@ def load_cmaps():
         cmaps_url = 'https://gibs.earthdata.nasa.gov/colormaps/v1.3/'
         cmap_d = parse(cmaps_url)
         # open a new file, pickle the dict, and save
-        with open('cmap_d.pkl', 'wb') as f:
+        with open(loc_fp, 'wb') as f:
             pickle.dump(cmap_d, f)
             return cmap_d
         # pass

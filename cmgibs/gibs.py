@@ -34,6 +34,9 @@ class GibsColormap(object):
 
         :example
         s = '[-INF,0.00)'
+
+        :returns
+        s = [float('-inf'), 0.0]
         """
         try:
             # strip off the leading and trailing enclosures, split on comma
@@ -104,9 +107,12 @@ class GibsColormap(object):
         # end in +INF, we'll need to force it to in order to adhere to the
         # intended color-value scheme
         if self.values[-1][1] != float('inf'):
+            # append an additional range value with the first value equal to the
+            # end value of the last range --> [lastval, float('inf')]
             self.values.append([self.values[-1][1], float('inf')])
 
         # ensuring total value range==[0, 1]
+        # TODO remove try-except? Reformat?
         try:
             self.values = np.ma.masked_invalid(np.array(self.values))
             if np.ma.is_masked(self.values):
@@ -149,7 +155,6 @@ class GibsColormap(object):
             if a[0][0] is np.ma.masked:
                 set_under = a[1]
             else:
-            #     # TODO we need to consider the FINAL value in the range, not just the lower
                 percentages.append((a[0][0], a[1]))
             if a[0][1] is np.ma.masked:
                 set_over = a[1]
@@ -171,8 +176,6 @@ class GibsColormap(object):
 
         # make the cmap
         self.cmap = matplotlib.colors.LinearSegmentedColormap(self.name, LinearL)
-        # if self.name == "AMSR2_Cloud_Liquid_Water_Day":
-        #     import ipdb; ipdb.set_trace()
 
         # set the out-of-range colors
         if set_under:

@@ -34,6 +34,9 @@ class GibsColormap(object):
 
         :example
         s = '[-INF,0.00)'
+
+        :returns
+        s = [float('-inf'), 0.0]
         """
         try:
             # strip off the leading and trailing enclosures, split on comma
@@ -58,7 +61,12 @@ class GibsColormap(object):
 
     def generate_cmap(self):
         """
-        Generate a LinearSegmentedColormap
+        Generate a LinearSegmentedColormap from a GIBS ColorMap XML file. Each
+        ColorMapEntry tag is of the form
+
+        ```
+        <ColorMapEntry rgb="179,0,2" transparent="false" value="[96,97)" ref="96"/>
+        ```
 
         :notes
 
@@ -99,15 +107,19 @@ class GibsColormap(object):
         # end in +INF, we'll need to force it to in order to adhere to the
         # intended color-value scheme
         if self.values[-1][1] != float('inf'):
+            # append an additional range value with the first value equal to the
+            # end value of the last range --> [lastval, float('inf')]
             self.values.append([self.values[-1][1], float('inf')])
 
         # ensuring total value range==[0, 1]
+        # TODO remove try-except? Reformat?
         try:
             self.values = np.ma.masked_invalid(np.array(self.values))
             if np.ma.is_masked(self.values):
                 _min = self.values.min()
                 # .ptp() returns range (maximum - minimum) (peak-to-peak)
                 rng = self.values.ptp()
+                # normalize to [0, 1] range
                 self.values = (self.values-_min)/rng
             else:
                 # NOTE shouldn't this be doing a different operation?
@@ -115,7 +127,7 @@ class GibsColormap(object):
                 rng = self.values.ptp()
                 self.values = (self.values-_min)/rng
 
-            print('TOTAL RANGE: [{0}-{1}] ({2})'.format(self.values.min(), self.values.max(), rng))
+            print('TOTAL RANGE: [{0}, {1}] ({2})'.format(self.values.min(), self.values.max(), rng))
 
         except Exception:
             print('-'*80)
@@ -126,6 +138,12 @@ class GibsColormap(object):
         # normalize RGB values into a [0, 1] range
         self.rgbs = list(map(lambda l: [x/255.0 for x in l], self.rgbs))
 
+        # because we may have artificially added an extra range value, we must
+        # also add another RGB array to match; we will duplicate the last RGB
+        # for this, as this was the color intended
+        if len(self.rgbs) != len(self.values):
+            self.rgbs.append(self.rgbs[-1])
+
         percentages = []
         set_under = None
         set_over = None
@@ -133,10 +151,10 @@ class GibsColormap(object):
         # find low/high out of range values to set colors for; set the masked
         # value to the non-masked value
         for a in zip(self.values, self.rgbs):
+            # percentages.append((a[0][0], a[1]))
             if a[0][0] is np.ma.masked:
                 set_under = a[1]
             else:
-                # TODO we need to consider the FINAL value in the range, not just the lower
                 percentages.append((a[0][0], a[1]))
             if a[0][1] is np.ma.masked:
                 set_over = a[1]

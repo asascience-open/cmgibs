@@ -6,6 +6,10 @@ import urllib.request
 from cmgibs import GibsColormap
 
 class Parser(html.parser.HTMLParser):
+    """Override the default HTMLParser class to let us collect all the different
+    colormap names from GIBS v1.3. The methods being overridden are
+    `handle_starttag`, `handle_endtag`, and they are used in `HTMLParser.feed()`
+    """
 
     def __init__(self):
         super().__init__()
@@ -23,6 +27,9 @@ class Parser(html.parser.HTMLParser):
                 self.filename = _attrs['href']
 
     def handle_endtag(self, tag):
+        """Append tags ending in .xml to `self.filenames` (list). These are the
+        individual colormaps.
+        """
         if self.filename:
             if '.xml' in self.filename:
                 self.filenames.append(self.filename)
@@ -52,7 +59,7 @@ def load_cmaps():
     Load a dictionary of NASA Gibs color maps from a .pkl file (if present) or
     go to the endpoint and get them and save them as a .pkl.
 
-    :returns: A dict with {name: colormap}
+    :returns: A dict with {name: colormap} key:value pairs
     """
     # check if file exists
     _dir = os.path.dirname(os.path.abspath(__file__))

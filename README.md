@@ -5,6 +5,28 @@
 ---
 
 ## Installation
+To install the latest version of `cmgibs` to your own environment:
 
+```bash
+$ cd <target_dir>
+```
+Make sure your environment is activated; on Linux,
+```bash
+$ source <env_name>/bin/activate
+$ pip install -e git+https://github.com/asascience-open/cmgibs.git@v0.0.2-dev#egg=cmgibs
+```
+You can run the unit tests to make sure all the code works:
+```bash
+$ pytest [-v]
+```
 
 ## Usage
+To use the color maps available in `cmgibs`, just import the module:
+
+```python
+import cmgibs
+import matplotlib.cm
+
+for name, cmap in cmgibs.cmap_d.items():
+    matplotlib.cm.register_cmap(name=name, cmap=cmap)
+```

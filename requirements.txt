@@ -1,3 +1,5 @@
 lxml==4.2.3
 matplotlib==2.2.2
 numpy>=1.14.3
+versioneer>=0.18
+-e git+git@github.com:asascience-open/cmgibs.git@aa25ae602e3073607a26f5ac51ed3563950eeeb6#egg=cmgibs

@@ -7,6 +7,6 @@ python:
 # command to install dependencies
 install:
   - pip install -r requirements.txt
-  - pip install .
+  - pip install -e git+git@github.com:asascience-open/cmgibs.git@aa25ae602e3073607a26f5ac51ed3563950eeeb6#egg=cmgibs
 # command to run tests
 script: pytest

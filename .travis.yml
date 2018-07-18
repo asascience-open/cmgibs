@@ -11,7 +11,7 @@ before_script:
   - make build-git
 before_install:
   - git config --global user.email "travis@example.com"
-- git config --global user.name "Travis CI"
+  - git config --global user.name "Travis CI"
 # command to install dependencies
 install:
   - pip install -r requirements.txt

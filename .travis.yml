@@ -4,10 +4,19 @@ python:
   - "3.6"
   # PyPy versions
   - "pypy3.5"
+env:
+  - GIT_VERSION=v2.11.0
+before_script:
+  - export GIT_DIST_PATH=$HOME/.git-dist
+  - make build-git
+before_install:
+  - git config --global user.email "travis@example.com"
+- git config --global user.name "Travis CI"
 # command to install dependencies
 install:
   - pip install -r requirements.txt
   - pip install .
   - pip install -e git+git@github.com:asascience-open/cmgibs.git@aa25ae602e3073607a26f5ac51ed3563950eeeb6#egg=cmgibs
 # command to run tests
-script: pytest
+script: 
+  - pytest

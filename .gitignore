@@ -35,6 +35,3 @@ wheels/
 .installed.cfg
 *.egg
 MANIFEST
-
-# pytest cache
-.pytest_cache

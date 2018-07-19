@@ -9,8 +9,8 @@ import urllib.request
 class GibsColormap(object):
 
     # open the XML schema with urllib, parse it with lxml
-    xsd = urllib.request.urlopen('http://gibs.earthdata.nasa.gov/schemas/ColorMap_v1.3.xsd')
-    XSD = lxml.etree.XMLSchema(lxml.etree.parse(xsd))
+    raw_xsd = urllib.request.urlopen('http://gibs.earthdata.nasa.gov/schemas/ColorMap_v1.3.xsd')
+    XSD = lxml.etree.XMLSchema(lxml.etree.parse(raw_xsd))
 
     def __init__(self, req, name):
         """Initialize a GibsColormap object using a given HTTP request and name

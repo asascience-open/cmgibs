@@ -1,18 +1,19 @@
 #!/usr/bin/env python
 
 from ssl import SSLContext
-import lxml.etree
+from xml import etree
 import matplotlib.colors
 import numpy as np
 import os
 import urllib.request
+import traceback
 
 class GibsColormap(object):
 
     # open the XML schema with urllib, parse it with lxml
     xsd_url = 'https://raw.githubusercontent.com/nasa-gibs/onearth/master/src/colormaps/schemas/ColorMap_v1.3.xsd'
     raw_xsd = urllib.request.urlopen(xsd_url, context=SSLContext())
-    XSD = lxml.etree.XMLSchema(lxml.etree.parse(raw_xsd))
+    XSD = etree.XMLSchema(etree.parse(raw_xsd))
 
     def __init__(self, req, name):
         """Initialize a GibsColormap object using a given HTTP request and name
@@ -21,7 +22,7 @@ class GibsColormap(object):
         """
         self.name = name
         # open the req with urllib, parse with lxml
-        self.doc = lxml.etree.parse(urllib.request.urlopen(req, context=SSLContext()))
+        self.doc = etree.parse(urllib.request.urlopen(req, context=SSLContext()))
 
         # validate against XSD
         valid = GibsColormap.XSD.validate(self.doc)  # NOTE what are we doing with this?

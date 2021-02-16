@@ -10,7 +10,7 @@ import traceback
 
 class GibsColormap(object):
 
-    # open the XML schema with urllib, parse it with lxml
+    # open the XML schema with urllib, parse it with xml
     xsd_url = 'https://raw.githubusercontent.com/nasa-gibs/onearth/master/src/colormaps/schemas/ColorMap_v1.3.xsd'
     raw_xsd = urllib.request.urlopen(xsd_url, context=SSLContext())
     XSD = etree.XMLSchema(etree.parse(raw_xsd))
@@ -21,7 +21,7 @@ class GibsColormap(object):
         :param str name          : name of the GibsColormap file
         """
         self.name = name
-        # open the req with urllib, parse with lxml
+        # open the req with urllib, parse with xml
         self.doc = etree.parse(urllib.request.urlopen(req, context=SSLContext()))
 
         # validate against XSD
